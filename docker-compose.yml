@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx:1.19
+    platform: linux/amd64
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - lnmp
+
+  php:
+    build: .
+    # image: php:7.2-fpm
+    platform: linux/amd64
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - lnmp
+
+  mysql:
+    image: mysql:5.7
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
+    networks:
+      - lnmp
+
+networks:
+  lnmp:
+    driver: bridge
